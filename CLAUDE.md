@@ -76,3 +76,9 @@ All dependencies are managed via the version catalog in `gradle/libs.versions.to
 
 - All text files must end with a newline character
 - Package structure: `es.voghdev.katallmandroid`
+
+## VCS / Git
+
+- For short stories, prefer rebase over merge. If branch has more commits, use merge instead of rebase to slightly minimize merge conflicts.
+- In case there are merge conflicts, inform about them, rather than resolving them.
+- When pushing a branch, do not forget to set the upstream, so the next time we can directly use "git push" in this branch instead of specifying the origin and the destination branch
