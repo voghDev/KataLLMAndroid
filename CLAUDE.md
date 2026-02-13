@@ -50,11 +50,22 @@ KataLLMAndroid is an Android application that displays a list of Large Language 
 
 ## Architecture
 
-This is a standard single-module Android application using Jetpack Compose for UI.
+This App will have the following architecture and best practices for Android development 
 
-**Current Structure:**
-- `MainActivity`: Single entry point with Compose UI
-- `ui/theme/`: Compose theming (Color, Theme, Type)
+- MVVM / MVI for propagating ViewModel state to a UI written in Jetpack Compose
+- kotlinx.coroutines and Flow for handling asynchronous and concurrent implementations
+- Hilt for Dependency Injection
+- Material Design (Material3) as the design system. Standard Android UI components will be priority, rather than custom ones
+- retrofit and okhttp for network requests
+- gson for parsing JSON objects
+- For the moment, we will use a single module called "app". This may change in the future and we may want to modularize the App by layer and by feature.
+- A simple architecture without unnecessary extra layers: UI (Activity/Fragment/Screen) - ViewModel - [UseCase] - [Repository] - Data Source
+- The repository Layer will be optional. There will be no interfaces with one single implementation. If there is only one implementation, we will use a class.
+- All UseCases, Repositories and Data Sources will return Flow. This way, we will be able to perform collection operations with them.
+- The ViewModel layer will use kotlinx.coroutines or extension functions that wrap them to handle concurrency.
+- UseCases can also be omitted if they only contain a single call to the Repository/DataSource. ViewModel can directly call the Repository/DataSource and we save layers in that case.
+- Every screen will have a @Composable class called *Screen and a ViewModel called *ViewModel. For example ProfileScreen, ProfileViewModel. 
+- Every ViewModel class will have a Unit Test class associated that will at least contain tests to assert collaborations between the ViewModel and external collaborators (UC, Repositories, DS)
 
 The project uses:
 - Version Catalog (`gradle/libs.versions.toml`) for centralized dependency management
