@@ -87,6 +87,7 @@ All dependencies are managed via the version catalog in `gradle/libs.versions.to
 
 - All text files must end with a newline character
 - Package structure: `es.voghdev.katallmandroid`
+- Do not add unnecessary comments in code or configuration files unless they are completely essential, such as documenting known bugs or critical issues in code or libraries
 
 ## VCS / Git
 

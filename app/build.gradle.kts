@@ -53,28 +53,18 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
 
-    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
-
-    // Navigation
     implementation(libs.androidx.navigation.compose)
-
-    // Retrofit + OkHttp + Gson
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.gson)
-
-    // Coroutines
     implementation(libs.kotlinx.coroutines.android)
-
-    // ViewModel Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
