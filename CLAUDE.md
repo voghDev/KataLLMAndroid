@@ -94,3 +94,7 @@ All dependencies are managed via the version catalog in `gradle/libs.versions.to
 - For short stories, prefer rebase over merge. If branch has more commits, use merge instead of rebase to slightly minimize merge conflicts.
 - In case there are merge conflicts, inform about them, rather than resolving them.
 - When pushing a branch, do not forget to set the upstream, so the next time we can directly use "git push" in this branch instead of specifying the origin and the destination branch
+
+## Pull Requests
+
+- For every PR that is opened, check for available Android devices by running `adb devices`. If a connected device is found, install the debug APK on it using `./gradlew installDebug` to verify the build can be installed successfully on a real device or emulator.
