@@ -29,6 +29,12 @@ class HomeViewModelTest {
     private lateinit var llmDataSource: LlmDataSource
     private lateinit var profileDataSource: ProfileDataSource
     private lateinit var subscriptionDataSource: SubscriptionDataSource
+    private lateinit var viewModel: HomeViewModel
+
+    private val mockLlms = listOf(
+        Llm(name = "Claude Sonnet 4", company = "Anthropic", releaseDate = "2025-05", description = "A balanced model"),
+    )
+    private val mockUser = User(name = "Jane Doe", address = "", phoneNumber = "", profilePictureUrl = "")
 
     @Before
     fun setUp() {
@@ -36,6 +42,10 @@ class HomeViewModelTest {
         llmDataSource = mockk()
         profileDataSource = mockk()
         subscriptionDataSource = mockk()
+        every { llmDataSource.getLlms() } returns flow { emit(mockLlms) }
+        every { profileDataSource.getUser() } returns flow { emit(mockUser) }
+        every { subscriptionDataSource.getUserSubscription() } returns flow { emit(UserSubscription.FREE) }
+        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
     }
 
     @After
@@ -45,12 +55,6 @@ class HomeViewModelTest {
 
     @Test
     fun `should start with loading state`() = runTest {
-        every { llmDataSource.getLlms() } returns flow { }
-        every { profileDataSource.getUser() } returns flow { }
-        every { subscriptionDataSource.getUserSubscription() } returns flow { }
-
-        val viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
-
         viewModel.uiState.test {
             val state = awaitItem()
             assertEquals(HomeUiState.Loading, state)
@@ -59,25 +63,11 @@ class HomeViewModelTest {
 
     @Test
     fun `should fetch llms from data source on init`() = runTest {
-        val expectedLlms = listOf(
-            Llm(
-                name = "Claude Sonnet 4",
-                company = "Anthropic",
-                releaseDate = "2025-05",
-                description = "A balanced model",
-            ),
-        )
-        val mockUser = User(name = "Jane Doe", address = "", phoneNumber = "", profilePictureUrl = "")
-        every { llmDataSource.getLlms() } returns flow { emit(expectedLlms) }
-        every { profileDataSource.getUser() } returns flow { emit(mockUser) }
-        every { subscriptionDataSource.getUserSubscription() } returns flow { emit(UserSubscription.FREE) }
-
-        val viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.test {
             val state = awaitItem()
-            assertEquals(HomeUiState.Success(expectedLlms), state)
+            assertEquals(HomeUiState.Success(mockLlms), state)
         }
 
         verify { llmDataSource.getLlms() }
@@ -87,12 +77,8 @@ class HomeViewModelTest {
 
     @Test
     fun `should emit error state when data source fails`() = runTest {
-        val mockUser = User(name = "Jane Doe", address = "", phoneNumber = "", profilePictureUrl = "")
         every { llmDataSource.getLlms() } returns flow { throw RuntimeException("Network error") }
-        every { profileDataSource.getUser() } returns flow { emit(mockUser) }
-        every { subscriptionDataSource.getUserSubscription() } returns flow { emit(UserSubscription.FREE) }
-
-        val viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
+        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.test {
