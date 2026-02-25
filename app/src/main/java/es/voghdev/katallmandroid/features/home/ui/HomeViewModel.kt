@@ -5,27 +5,36 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.voghdev.katallmandroid.features.home.data.Llm
 import es.voghdev.katallmandroid.features.home.data.LlmDataSource
+import es.voghdev.katallmandroid.features.profile.data.ProfileDataSource
+import es.voghdev.katallmandroid.features.subscription.data.SubscriptionDataSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val llmDataSource: LlmDataSource,
+    private val profileDataSource: ProfileDataSource,
+    private val subscriptionDataSource: SubscriptionDataSource,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState
 
     init {
-        loadLlms()
+        loadHomeData()
     }
 
-    private fun loadLlms() {
+    private fun loadHomeData() {
         viewModelScope.launch {
-            llmDataSource.getLlms()
+            combine(
+                llmDataSource.getLlms(),
+                profileDataSource.getUser(),
+                subscriptionDataSource.getUserSubscription(),
+            ) { llms, _, _ -> llms }
                 .catch { _uiState.value = HomeUiState.Error(it.message ?: "Unknown error") }
                 .collect { llms -> _uiState.value = HomeUiState.Success(llms) }
         }
