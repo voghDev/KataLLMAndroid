@@ -42,10 +42,6 @@ class HomeViewModelTest {
         llmDataSource = mockk()
         profileDataSource = mockk()
         subscriptionDataSource = mockk()
-        every { llmDataSource.getLlms() } returns flow { emit(mockLlms) }
-        every { profileDataSource.getUser() } returns flow { emit(mockUser) }
-        every { subscriptionDataSource.getUserSubscription() } returns flow { emit(UserSubscription.FREE) }
-        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
     }
 
     @After
@@ -53,8 +49,18 @@ class HomeViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private fun givenThereAreSomeLlms() = every { llmDataSource.getLlms() } returns flow { emit(mockLlms) }
+    private fun givenThereAreNoLlms() = every { llmDataSource.getLlms() } returns flow { throw RuntimeException("Network error") }
+    private fun givenTheUserProfile() = every { profileDataSource.getUser() } returns flow { emit(mockUser) }
+    private fun givenTheUserHasSubscription(subscription: UserSubscription) = every { subscriptionDataSource.getUserSubscription() } returns flow { emit(subscription) }
+
     @Test
     fun `should start with loading state`() = runTest {
+        givenThereAreSomeLlms()
+        givenTheUserProfile()
+        givenTheUserHasSubscription(UserSubscription.FREE)
+        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
+
         viewModel.uiState.test {
             val state = awaitItem()
             assertEquals(HomeUiState.Loading, state)
@@ -63,6 +69,10 @@ class HomeViewModelTest {
 
     @Test
     fun `should fetch llms from data source on init`() = runTest {
+        givenThereAreSomeLlms()
+        givenTheUserProfile()
+        givenTheUserHasSubscription(UserSubscription.FREE)
+        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.test {
@@ -77,7 +87,9 @@ class HomeViewModelTest {
 
     @Test
     fun `should emit error state when data source fails`() = runTest {
-        every { llmDataSource.getLlms() } returns flow { throw RuntimeException("Network error") }
+        givenThereAreNoLlms()
+        givenTheUserProfile()
+        givenTheUserHasSubscription(UserSubscription.FREE)
         viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
         testDispatcher.scheduler.advanceUntilIdle()
 
