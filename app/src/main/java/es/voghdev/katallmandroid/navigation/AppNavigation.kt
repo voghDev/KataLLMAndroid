@@ -32,7 +32,13 @@ fun AppNavigation(
             )
         }
         composable(Routes.PROFILE) {
-            ProfileScreen(onNavigateBack = { navController.popBackStack() })
+            ProfileScreen(
+                onNavigateBack = {
+                    if (navController.currentDestination?.route == Routes.PROFILE) {
+                        navController.popBackStack()
+                    }
+                },
+            )
         }
         composable(
             route = Routes.LLM_DETAIL,
@@ -41,7 +47,11 @@ fun AppNavigation(
             val llmIndex = backStackEntry.arguments?.getInt("llmIndex") ?: 0
             LlmDetailScreen(
                 llmIndex = llmIndex,
-                onNavigateBack = { navController.popBackStack() },
+                onNavigateBack = {
+                    if (navController.currentDestination?.route == Routes.LLM_DETAIL) {
+                        navController.popBackStack()
+                    }
+                },
             )
         }
     }
