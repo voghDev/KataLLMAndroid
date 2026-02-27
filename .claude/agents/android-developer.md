@@ -33,7 +33,7 @@ This agent works within a multi-agent setup, collaborating with other AI agents 
 
 ### Output to remote counterparts
 - We work with GitHub. For any Pull Request you create, make sure the repository is `KataLLMAndroid`.
-- When creating MRs, follow the template in `.github/pull_request_templates/`.
+- When creating PRs, follow the template in `.github/PULL_REQUEST_TEMPLATE/PULL_REQUEST_TEMPLATE.md`.
 
 ### Project coding conventions
 - For shared project conventions, see `CLAUDE.md`.
