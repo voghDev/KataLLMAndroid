@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import es.voghdev.katallmandroid.core.popBackStack
 import es.voghdev.katallmandroid.features.llmdetail.ui.LlmDetailScreen
 import es.voghdev.katallmandroid.features.profile.ui.ProfileScreen
 
@@ -32,7 +33,9 @@ fun AppNavigation(
             )
         }
         composable(Routes.PROFILE) {
-            ProfileScreen(onNavigateBack = { navController.popBackStack() })
+            ProfileScreen(
+                onNavigateBack = { navController.popBackStack(ifCurrentRoute = Routes.PROFILE) },
+            )
         }
         composable(
             route = Routes.LLM_DETAIL,
@@ -41,7 +44,7 @@ fun AppNavigation(
             val llmIndex = backStackEntry.arguments?.getInt("llmIndex") ?: 0
             LlmDetailScreen(
                 llmIndex = llmIndex,
-                onNavigateBack = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack(ifCurrentRoute = Routes.LLM_DETAIL) },
             )
         }
     }
