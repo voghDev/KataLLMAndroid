@@ -7,9 +7,9 @@ import es.voghdev.katallmandroid.features.home.data.Llm
 import es.voghdev.katallmandroid.features.home.data.LlmDataSource
 import es.voghdev.katallmandroid.features.profile.data.ProfileDataSource
 import es.voghdev.katallmandroid.features.subscription.data.SubscriptionDataSource
+import es.voghdev.katallmandroid.core.catchAndHandle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,6 +19,7 @@ class HomeViewModel @Inject constructor(
     private val llmDataSource: LlmDataSource,
     private val profileDataSource: ProfileDataSource,
     private val subscriptionDataSource: SubscriptionDataSource,
+    private val onError: @JvmSuppressWildcards (Throwable) -> Unit,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -35,7 +36,9 @@ class HomeViewModel @Inject constructor(
                 profileDataSource.getUser(),
                 subscriptionDataSource.getUserSubscription(),
             ) { llms, _, _ -> llms }
-                .catch { _uiState.value = HomeUiState.Error(it.message ?: "Unknown error") }
+                .catchAndHandle(onError) { e ->
+                    _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
+                }
                 .collect { llms -> _uiState.value = HomeUiState.Success(llms) }
         }
     }

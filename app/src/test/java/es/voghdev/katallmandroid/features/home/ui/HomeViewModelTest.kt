@@ -29,6 +29,7 @@ class HomeViewModelTest {
     private lateinit var llmDataSource: LlmDataSource
     private lateinit var profileDataSource: ProfileDataSource
     private lateinit var subscriptionDataSource: SubscriptionDataSource
+    private val onError: (Throwable) -> Unit = {}
     private lateinit var viewModel: HomeViewModel
 
     private val mockLlms = listOf(
@@ -59,7 +60,7 @@ class HomeViewModelTest {
         givenThereAreSomeLlms()
         givenTheUserProfileReturns(mockUser)
         givenTheUserHasSubscription(UserSubscription.FREE)
-        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
+        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource, onError)
 
         viewModel.uiState.test {
             val state = awaitItem()
@@ -72,7 +73,7 @@ class HomeViewModelTest {
         givenThereAreSomeLlms()
         givenTheUserProfileReturns(mockUser)
         givenTheUserHasSubscription(UserSubscription.FREE)
-        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
+        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource, onError)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.test {
@@ -90,7 +91,7 @@ class HomeViewModelTest {
         givenThereAreNoLlms()
         givenTheUserProfileReturns(mockUser)
         givenTheUserHasSubscription(UserSubscription.FREE)
-        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource)
+        viewModel = HomeViewModel(llmDataSource, profileDataSource, subscriptionDataSource, onError)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiState.test {
