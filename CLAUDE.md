@@ -97,4 +97,4 @@ All dependencies are managed via the version catalog in `gradle/libs.versions.to
 
 ## Pull Requests
 
-- For every PR that is opened, check for available Android devices by running `adb devices`. If a connected device is found, install the debug APK on it using `./gradlew installDebug` to verify the build can be installed successfully on a real device or emulator.
+- For every PR that is opened, check for available Android devices by running `adb devices`. If a connected device is found, install the debug APK on it using `./gradlew installDebug` to verify the build can be installed successfully on a real device or emulator. After installing, launch the App using `adb shell am start -n es.voghdev.katallmandroid/.MainActivity`.
